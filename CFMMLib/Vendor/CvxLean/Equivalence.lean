@@ -1,3 +1,7 @@
+import CFMMLib.Vendor.CvxLean.Minimization
+
+set_option autoImplicit false
+
 /-!
 # Equivalence of optimization problems
 
@@ -11,10 +15,6 @@ that preserve optimality in both directions.
 
 Also defines StrongEquivalence (preserves feasibility + bounds objective).
 -/
-
-import CFMMLib.Vendor.CvxLean.Minimization
-
-set_option autoImplicit false
 
 namespace Minimization
 
@@ -34,19 +34,16 @@ variable {p q r}
 
 notation p " ≡ " q => Equivalence p q
 
-@[equiv]
 def refl : p ≡ p :=
   { phi := id, psi := id,
     phi_optimality := fun _ h => h,
     psi_optimality := fun _ h => h }
 
-@[equiv]
 def symm (E : p ≡ q) : q ≡ p :=
   { phi := E.psi, psi := E.phi,
     phi_optimality := E.psi_optimality,
     psi_optimality := E.phi_optimality }
 
-@[equiv]
 def trans (E₁ : p ≡ q) (E₂ : q ≡ r) : p ≡ r :=
   { phi := E₂.phi ∘ E₁.phi,
     psi := E₁.psi ∘ E₂.psi,
@@ -93,14 +90,16 @@ def Equivalence.ofStrongEquivalence (SE : p ≡' q) : p ≡ q :=
     phi_optimality := fun x ⟨hfx, hopt⟩ =>
       ⟨SE.phi_feasibility x hfx,
        fun y hfy =>
-         le_trans (SE.phi_optimality x hfx)
-           (le_trans (hopt (SE.psi y) (SE.psi_feasibility y hfy))
-             (by linarith [SE.psi_optimality y hfy]))⟩,
+         calc q.objFun (SE.phi x)
+             ≤ p.objFun x := SE.phi_optimality x hfx
+           _ ≤ p.objFun (SE.psi y) := hopt _ (SE.psi_feasibility y hfy)
+           _ ≤ q.objFun y := SE.psi_optimality y hfy⟩,
     psi_optimality := fun x ⟨hfx, hopt⟩ =>
       ⟨SE.psi_feasibility x hfx,
        fun y hfy =>
-         le_trans (SE.psi_optimality x hfx)
-           (le_trans (hopt (SE.phi y) (SE.phi_feasibility y hfy))
-             (by linarith [SE.phi_optimality y hfy]))⟩ }
+         calc p.objFun (SE.psi x)
+             ≤ q.objFun x := SE.psi_optimality x hfx
+           _ ≤ q.objFun (SE.phi y) := hopt _ (SE.phi_feasibility y hfy)
+           _ ≤ p.objFun y := SE.phi_optimality y hfy⟩ }
 
 end Minimization

@@ -1,3 +1,7 @@
+import CFMMLib.Vendor.CvxLean.Equivalence
+
+set_option autoImplicit false
+
 /-!
 # Relaxation of optimization problems
 
@@ -8,10 +12,6 @@ Adapted for Lean 4.28.0 / current Mathlib.
 
 p ≽' q means: q is a relaxation of p (forward map, feasibility + bound).
 -/
-
-import CFMMLib.Vendor.CvxLean.Equivalence
-
-set_option autoImplicit false
 
 namespace Minimization
 
@@ -36,17 +36,17 @@ def refl : p ≽' p :=
     phi_optimality := fun _ _ => le_refl _ }
 
 /-- Removing a constraint is a relaxation. -/
-def remove_constraint {f : D → R} {c cs' : D → Prop}
-    (hcs : ∀ x, p.constraints x ↔ c x ∧ cs' x) :
-    p ≽' ⟨f, cs'⟩ :=
+def remove_constraint {cs cs' : D → Prop}
+    (hcs : ∀ x, cs x → cs' x) :
+    (⟨p.objFun, cs⟩ : Minimization D R) ≽' ⟨p.objFun, cs'⟩ :=
   { phi := id,
-    phi_feasibility := fun x h_feas_x => ((hcs x).mp h_feas_x).2,
+    phi_feasibility := fun x h => hcs x h,
     phi_optimality := fun _ _ => le_refl _ }
 
 /-- Weakening constraints is a relaxation. -/
-def weaken_constraints {f : D → R} (cs' : D → Prop)
+def weaken_constraints (cs' : D → Prop)
     (hcs : ∀ x, p.constraints x → cs' x) :
-    p ≽' ⟨f, cs'⟩ :=
+    p ≽' ⟨p.objFun, cs'⟩ :=
   { phi := id,
     phi_feasibility := fun x h => hcs x h,
     phi_optimality := fun _ _ => le_refl _ }

@@ -1,3 +1,7 @@
+import CFMMLib.Vendor.CvxLean.Equivalence
+
+set_option autoImplicit false
+
 /-!
 # Reduction of optimization problems
 
@@ -8,10 +12,6 @@ Adapted for Lean 4.28.0 / current Mathlib.
 
 p ≼ q means: solving q gives a solution to p (backward map only).
 -/
-
-import CFMMLib.Vendor.CvxLean.Equivalence
-
-set_option autoImplicit false
 
 namespace Minimization
 

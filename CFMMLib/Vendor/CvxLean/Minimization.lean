@@ -1,3 +1,7 @@
+import Mathlib.Order.Bounds.Basic
+
+set_option autoImplicit false
+
 /-!
 # Minimization and Solution
 
@@ -9,10 +13,6 @@ Adapted for Lean 4.28.0 / current Mathlib.
 These are the building blocks: `Minimization` (optimization problems)
 and `Solution` (optimal points).
 -/
-
-import Mathlib.Order.Bounds.Basic
-
-set_option autoImplicit false
 
 /-- Type of an optimization problem. -/
 structure Minimization (D R : Type) where

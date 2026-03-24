@@ -1,3 +1,7 @@
+import CFMMLib.Vendor.AMMLib.SwapRate
+
+set_option autoImplicit false
+
 /-!
 # Constant Product Swap Rate
 
@@ -22,10 +26,6 @@ Key economic results:
 - Optimal arbitrage: x* = √(p₁/p₀ · r₀ · r₁) - r₀
 -/
 
-import CFMMLib.Vendor.AMMLib.SwapRate
-
-set_option autoImplicit false
-
 namespace SX
 
 /-- The constant product swap rate: r₁ / (r₀ + x).
@@ -37,8 +37,14 @@ noncomputable def constprod : SX :=
 theorem constprod_outputbound : outputbound constprod := by
   intro x r₀ r₁ hx hr₀ hr₁
   simp only [constprod]
-  rw [div_lt_iff (by linarith)]
-  nlinarith
+  have hd : (0 : ℝ) < r₀ + x := by linarith
+  have hne : r₀ + x ≠ 0 := ne_of_gt hd
+  calc x * (r₁ / (r₀ + x))
+      = x * r₁ / (r₀ + x) := by rw [mul_div_assoc']
+    _ < (r₀ + x) * r₁ / (r₀ + x) := by
+        apply div_lt_div_of_pos_right _ hd
+        nlinarith
+    _ = r₁ := by rw [mul_div_cancel_left₀ _ hne]
 
 /-- The product invariant: (r₀ + x)(r₁ - y) = r₀ · r₁ where y = x · r₁/(r₀ + x).
     This is `semTx_equal_product` from r-marche/MEV-formal. -/

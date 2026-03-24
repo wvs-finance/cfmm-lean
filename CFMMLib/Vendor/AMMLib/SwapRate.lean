@@ -1,3 +1,7 @@
+import Mathlib.Data.NNReal.Basic
+
+set_option autoImplicit false
+
 /-!
 # Swap Rate Functions
 
@@ -12,10 +16,6 @@ where available, or plain `ℝ` with positivity hypotheses.
 A swap rate function `SX` maps (input, reserve_in, reserve_out) → rate,
 where the output amount = input * rate.
 -/
-
-import Mathlib.Data.NNReal.Basic
-
-set_option autoImplicit false
 
 /-- A swap rate function: given input x, reserve_in r₀, reserve_out r₁,
     returns the exchange rate. Output amount = x * (sx x r₀ r₁). -/
